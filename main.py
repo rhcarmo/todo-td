@@ -1,68 +1,59 @@
-from flask import Flask, render_template, request, redirect
+import os 
+from flask import Flask
+from database import db
+from controllers import TodoController, UserController
 
-from flask_sqlalchemy import SQLAlchemy
-
+###### CONFIGURACOES ######
 app = Flask('app')
+app.config['SECRET_KEY'] = 'qEChL7R3SpF72cEA'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-db = SQLAlchemy(app)
+db.init_app(app)
 
-class Todos(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  title = db.Column(db.String(100))
-  complete = db.Column(db.Boolean)
-  category = db.Column(db.String(50))
-
-class Users(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  email = db.Column(db.String())
-  password = db.Column(db.String())
-
+###### ROTAS ######
 @app.route('/')
 def index():
-  todos = Todos.query.all()
-  return render_template(
-    'index.html',
-    todos=todos
-  )
+  return TodoController.index()
 
 @app.route('/create', methods=['POST'])
 def create():
-  title = request.form.get('title')
-  cat = request.form.get('category')
-  new_todo = Todos(
-    title=title,
-    category=cat,
-    complete=False
-  )
-  db.session.add(new_todo)
-  db.session.commit()
-  return redirect('/')
+  return TodoController.create()
 
 @app.route('/delete/<int:id>')
 def delete(id):
-  todo = Todos.query.filter_by(id=id).first()
-  db.session.delete(todo)
-  db.session.commit()
-  return redirect('/')
+  return TodoController.delete(id)
 
 @app.route('/complete/<int:id>')
 def complete(id):
-  todo = Todos.query.filter_by(id=id).first()
-  todo.complete = True
-  db.session.commit()
-  return redirect('/')
+  return TodoController.complete(id)
 
 @app.route('/update/<int:id>', methods=['POST'])
 def update(id):
-  title = request.form.get('title')
+  return TodoController.update(id)
 
-  todo = Todos.query.filter_by(id=id).first()
-  todo.title = title
-  db.session.commit()
-  
-  return redirect('/')
+@app.route('/login')
+def login():
+  return UserController.login()
 
-# IMPORTANTE V
-if __name__ == '__main__':
+@app.route('/register')
+def register():
+  return UserController.register()
+
+@app.route('/signup', methods=['POST'])
+def signup():
+  return UserController.signup()
+
+@app.route('/signin', methods=['POST'])
+def signin():
+  return UserController.signin()
+
+@app.route('/logout')
+def logout():
+  return UserController.logout()
+
+###### INICIALIZACAO ######
+with app.app_context():
   db.create_all()
-  app.run(host='0.0.0.0', port=8080)
+
+if __name__ == '__main__':
+  port = int(os.environ.get('PORT', 5000))
+  app.run(host='0.0.0.0', port=port)

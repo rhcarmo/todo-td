@@ -38,3 +38,40 @@ body {
   gap: 12px;
   font-size: 22px;
 }
+
+.form-login {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.messages {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+}
+
+.error {
+  background-color: #E74C3C;
+  color: #FFFFFF;
+  border-radius: 5px;
+  padding: 8px 16px;
+  margin-bottom: 10px;
+}
+
+.success {
+  background-color: #2ECC71;
+  color: #FFFFFF;
+  border-radius: 5px;
+  padding: 8px 16px;
+  margin-bottom: 10px;
+}
+
+.info {
+  background-color: #3498DB;
+  color: #FFFFFF;
+  border-radius: 5px;
+  padding: 8px 16px;
+  margin-bottom: 10px;
+}
